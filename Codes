@@ -254,3 +254,37 @@ begin
                  end;
                end;
 end;
+
+procedure borrarElemento (var aarbol;datointeger;var resultadoboolean);
+var
+  auxarbol;
+begin
+ if (a=nil) then
+   resultado=false
+ else
+   if (a^.datodato)then
+     borrarElemento (a^.HI, dato,resultado)
+   else
+     if (a^.datodato)then
+       borrarElemento (a^.HD, dato,resultado)
+     else begin
+       resultado=true;
+       if (a^.HI=nil) then begin
+         aux=a;
+         a=aux^.HD;
+         dispose (aux);
+         end
+       else
+         if (a^.HD=nil) then begin
+           aux=a;
+           a=aux^.HI;
+           dispose (aux);
+           end
+         else begin
+           aux=buscar_min(a^.HD);
+           a^.dato=aux^.dato;
+           borrarElemento (a^.HD, a^.dato,resultado);
+
+         end;
+     end;
+end;
