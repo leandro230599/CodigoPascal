@@ -1,0 +1,229 @@
+Procedure AgregarAdelante (var L:lista; per:persona);
+  Var nue:Lista;
+Begin  
+  New(nue); 
+  nue^.datos:=per; 
+  nue^.sig:=L;  
+  L:=nue;
+End;
+---------------------------------------------------------------------------------------------------------------------------------------
+procedure AgregarAlFinal (var pri: lista; per: persona); 
+var  act, nue : lista;
+begin 
+   new (nue);
+    nue^.datos:= per;
+    nue^.sig := NIL;
+   if pri <> Nil then begin
+                           act := pri ;
+                   while  (act^.sig <> NIL ) do act := act^.sig ;
+                    act^.sig := nue ;
+                 end
+                 else
+                            pri:= nue;
+end;
+---------------------------------------------------------------------------------------------------------------------------------------
+Procedure BorrarElemento ( var pri: lista; nom:cadena50; var exito: boolean);
+   var ant, act: lista;
+ begin 
+     exito := false;
+     act := pri;
+     ant := pri;
+ {Recorro mientras no se termine la lista y no encuentre el elemento}
+     while  (act <> NIL)  and (act^.datos.nom <> nom) do begin
+         ant := act;
+         act := act^.sig
+     end;   
+     if (act <> NIL) then begin
+                         	         exito := true; 
+	                if (act = pri) then  pri := act^.sig;
+                                         else  ant^.sig:= act^.sig;
+                dispose (act);
+            end;
+ end;
+---------------------------------------------------------------------------------------------------------------------------------------
+Procedure InsertarElemento ( var pri: lista; per: persona);
+   var ant, nue, act: lista;
+ begin
+      new (nue);
+      nue^.datos := per;
+      act := pri;
+      ant := pri;
+    {Recorro mientras no se termine la lista y no encuentro la posición correcta}
+     while (act<>NIL) and (act^.datos.nombre < per.nombre) do begin
+          ant := act;
+          act := act^.sig ;
+     end;
+     if (ant = act)  then pri := nue   {el dato va al principio}
+                            else  ant^.sig  := nue; {el dato va entre otros dos o al final}
+     nue^.sig := act ;
+  end;
+---------------------------------------------------------------------------------------------------------------------------------------
+Procedure Imprimir (pri:lista);
+Begin
+   while (pri <> NIL) do begin
+     write (pri^.datos, ' ');
+     pri:= pri^.sig
+  end;
+  writeln;
+end;
+---------------------------------------------------------------------------------------------------------------------------------------
+procedure determinar_minimo2(var a:arrlistas;var min:integer);
+var i,pos:integer;
+begin
+  min:=Valor_alto;
+  for i:=1 to DF do begin
+    if (a[i]<>nil) then
+      if (a[i]^.datos<min)then begin
+        min:=a[i]^.datos;
+        pos:=i;
+      end;
+   end;
+  if (min<>Valor_alto)then
+    a[pos]:=a[pos]^.sig;
+end;
+---------------------------------------------------------------------------------------------------------------------------------------
+procedure Merge2(a:arrListas; var L3:Lista);
+var
+ min:integer;
+ ult:Lista;
+begin
+ determinar_minimo2(a,min);
+   while (min<>Valor_alto)do begin
+     agregaralFinal(L3,ult,min);
+     determinar_minimo2(a,min);
+   end;
+end;
+---------------------------------------------------------------------------------------------------------------------------------------
+procedure MergeAcumulador(l1,l2:lista; var l3:lista);
+var
+ ult:lista;
+ min:venta;
+ acu,codAc:integer;
+begin
+ determinar_minimo(l1,l2,min);
+ while(min.prod<>corte)do begin
+  acu:=0;
+  codAc:=min.prod;
+  while(min.prod=codAc)do begin
+   acu:=acu+min.cant;
+   determinar_minimo(l1,l2,min);
+  end;
+  AgregarAlFinal(l3,ult,acu,codAc);
+ end;
+end;
+---------------------------------------------------------------------------------------------------------------------------------------
+ARBOL
+
+Procedure Insertar  (Var a : arbol; dato : elemento);     {iterativo}
+Var 
+    	ult, actual, nue : arbol;
+     Fui_A_Izq : Boolean;
+Begin
+   	New (nue );
+    	nue^. elem:= Dato;
+    	nue^.hijoIzq := nil; nue^.hijoDer:= nil;
+     	If  a = nil Then  a := nue
+                      else begin
+                         actual := a;        { me posiciono al comienzo }
+                        {mientras no termine la rama, busco la posición para insertar }
+                         while actual <> nil do Begin
+               	ult := actual;
+                	Fui_a_Izq := ( Dato < actual^.elem );
+               	if Fui_a_Izq Then actual := actual^.hijoIzq
+                                                Else actual := actual^.hijoDer;
+                         end; 
+                       {lo enganchamos de Ultimo segun corresponda}
+                         if Fui_a_Izq Then ult^.hijoIzq := nue
+                                            Else ult^.hijoDer := nue
+    	                end;
+  end;
+
+---------------------------------------------------------------------------------------------------------------------------------------
+Procedure Insertar (Var a:arbol; dato:elemento);          {Recursivo}
+
+Begin
+ if a = nil Then begin { llegué al final de la rama }
+    New( A );           
+         	    a^.elem := dato;
+                 a^.hijoIzq  := nil;
+        	    a^.hijoDer  := nil;
+   		  End
+                Else 
+                 if dato<a^.elem then Insertar (a^.hijoIzq,dato)
+   		                           Else  Insertar (a^.hijoDer,dato)
+End;     
+---------------------------------------------------------------------------------------------------------------------------------------
+Procedure enOrden ( a : arbol );
+Begin
+   if ( a<> nil ) then begin
+                        if ( a^.hijoIzq <> nil ) then 
+                                                           enOrden (a^.hijoIzq);
+                        write (a^.elem); 
+                        if ( a^.hijoDer <> nil ) then 
+                                                           enOrden (a^.hijoDer);
+                      end;
+ end;
+---------------------------------------------------------------------------------------------------------------------------------------
+Procedure postOrden ( a : arbol );
+begin
+   if ( a<> nil ) then begin
+                         postOrden (a^.hijoIzq);
+                         postOrden (a^.hijoDer);
+                         write (a^.elem)
+                       end;
+end;
+---------------------------------------------------------------------------------------------------------------------------------------
+Procedure preOrden ( a : arbol );
+begin
+   if ( a<> nil ) then begin
+                        write (a^.elem);
+                        preOrden (a^.hijoIzq);
+                        preOrden (a^.hijoDer)
+                      end;
+end;
+---------------------------------------------------------------------------------------------------------------------------------------
+
+Function Buscar (a: arbol; dato: integer): boolean; 
+begin
+  if (a=nil) then Buscar:=false
+    else 
+      if (dato= a^.elem) then Buscar:=true
+      else 
+        if (dato < a^.elem) then
+          Buscar:=Buscar(a^.hijoIzq,elem)
+          else
+            Buscar:=Buscar(a^.hijoDer, elem)
+End;
+---------------------------------------------------------------------------------------------------------------------------------------
+
+Procedure Borrar ( x:integer;  var a: arbol;  var ok:boolean);
+  Var
+    aux : arbol;
+  begin
+   if a=nil then ok:=false
+    else
+       if (x<a^.elem) then Borrar(x, a^.hijoIzq,ok) {Busco en el subarbol izquierdo}
+                 else if (x>a^.elem) then 
+                                                 Borrar (x,a^.hijoDer,ok) {Busco en sub.derecho}
+                                                  else begin
+                                                      ok := true;    
+                                                     {solo hijo a derecha}
+          	                            if a^.hijoIzq =nil then begin                               
+			                                                                aux := a;
+                                                      			                         a := a^.hijoDer;
+                   			                                             dispose (aux);
+                                                              end   
+                                                                else{solo hijo a izquierda}
+                                                                if a^.hijoDer =nil then begin
+                                                                    aux := a;
+                                                                    a := a^.hijoIzq;
+                                                                    dispose (aux);
+                                                                  end
+                                          {2 hijos. Reemplazo con el más pequeño de la derecha}
+                                                                      else begin 
+                                                                aux := buscar_Min(a^.hijoDer);
+                                                                a^.elem := aux^.elem;
+                                                                              Borrar(a^.elem,a^.hijoDer,ok);
+	                                                                              End;
+                                                            end;
+End;                                               
